@@ -1,14 +1,14 @@
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import TransactionHeader from "../components/TransactionHeader";
+import TransactionHeader from "../components/transaction/TransactionHeader";
 import { Box, Button, Divider, Icon, IconButton, Typography } from "@mui/material";
 import PageContainer from "../components/PageConteiner";
 import SearchBar from "../components/SearchBar";
 import AddIcon from "@mui/icons-material/Add";
-import TransactionBox from "../components/TransactionBox";
-import TransactionSummary from "../components/TransactionSummary";
+import TransactionBox from "../components/transaction/TransactionBox";
+import TransactionSummary from "../components/transaction/TransactionSummary";
 import { useState } from "react";
-import TransactionDialog from "../components/dialogs/TransactionDialog";
+import TransactionDialog from "../components/transaction/TransactionDialog";
 dayjs.locale("pt-br");
 export default function Transactions() {
   //variáveis de controle do dialog de transações

@@ -1,6 +1,6 @@
 import { Box, Button, Container, Typography } from "@mui/material";
 import React from "react";
-import RegisterForm from "../components/forms/RegisterForm";
+import RegisterForm from "../components/user/RegisterForm";
 
 export default function Register() {
   return (

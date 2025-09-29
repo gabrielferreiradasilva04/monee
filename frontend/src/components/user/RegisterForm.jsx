@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useNotification } from "../context/NotificationProvider";
+import { useNotification } from "../context/NotificationProvider.jsx";
 import { api } from "../../services/axiosConfig.js"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -79,7 +79,7 @@ export default function RegisterForm() {
 
     if(!validateForm() || !passwordValidation(password, passwordRep)){
       setLoading(false);
-      return; //interrompendo a execução
+      return; 
     }
 
     api

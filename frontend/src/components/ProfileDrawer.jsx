@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import ProfileForm from "./forms/ProfileForm";
+import ProfileForm from "./user/ProfileForm.jsx";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../components/context/AuthContext.jsx";
 

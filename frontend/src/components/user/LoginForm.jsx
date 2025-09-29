@@ -30,9 +30,8 @@ export default function LoginForm() {
   //variáveis de controle para o login
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState("");
-  const [loading, setLoading] = useState("");
-  const [error, setError] = useState("");
+  const [remember, setRemember] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   //controles de formulário

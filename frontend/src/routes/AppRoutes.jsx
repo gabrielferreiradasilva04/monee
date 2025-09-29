@@ -10,17 +10,24 @@ import OpenFinance from "../pages/OpenFinance";
 import Transactions from "../pages/Transactions";
 import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
-import Configuration from "../pages/Configuration";
+import BankAccounts from "../pages/BankAccounts";
 
 export default function AppRoutes() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
             {/*Rotas padrões protegidas*/}
             <Route path="overview" element={<Overview />}></Route>
-            <Route path="configuration" element={<Configuration />}></Route>
+            <Route path="bank-accounts" element={<BankAccounts />}></Route>
             <Route path="financial-goal" element={<FinancialGoal />}></Route>
             <Route path="open-finance" element={<OpenFinance />}></Route>
             <Route path="transactions" element={<Transactions />}></Route>

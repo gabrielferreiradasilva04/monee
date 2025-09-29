@@ -9,7 +9,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsIcon from "@mui/icons-material/Settings";
 import ProfileDrawer from "./ProfileDrawer.jsx";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useAuth } from "./context/AuthContext.jsx";
@@ -18,6 +18,8 @@ const pages = [
   { title: "Visão Geral", path: "/overview" },
   { title: "Lançamentos", path: "/transactions" },
   { title: "Metas", path: "/financial-goal" },
+  { title: "Contas", path: "/bank-accounts" },
+  { title: "Categorias", path: "/categories" },
   { title: "Open Finance", path: "/open-finance" },
 ];
 
@@ -52,6 +54,8 @@ export default function Appbar() {
     navigate(path);
     handleCloseNavMenu();
   };
+
+
 
   return (
     <>
@@ -184,12 +188,6 @@ export default function Appbar() {
               }}
             >
 
-              <Tooltip title="Configurações">
-                <IconButton size="big" onClick={() => navigate('/configuration')}>
-                  <SettingsIcon sx={{ color: "white" }} />
-                </IconButton>
-              </Tooltip>
-
               <Tooltip title="Praticar">
                 <IconButton size="big">
                   <SportsEsportsIcon sx={{ color: "white" }} />
@@ -205,7 +203,11 @@ export default function Appbar() {
           </Box>
         </Toolbar>
       </AppBar>
-      <ProfileDrawer open={openDrawer} onClose={toggleDrawer(false)} user={user} />
+      <ProfileDrawer
+        open={openDrawer}
+        onClose={toggleDrawer(false)}
+        user={user}
+      />
     </>
   );
 }

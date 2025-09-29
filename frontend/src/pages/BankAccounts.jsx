@@ -13,6 +13,11 @@ export default function BankAccounts() {
     setSelectedAccount(account);
     setOpenAccountDialog(true);
   };
+  
+  const handleSave = () => {
+    setOpenAccountDialog(false);
+    // Recarregar a lista de contas ou atualizar o estado conforme necessário
+  }
 
   return (
     <>
@@ -55,10 +60,7 @@ export default function BankAccounts() {
         initialData={selectedAccount}
         open={openAccountDialog}
         onClose={() => setOpenAccountDialog(false)}
-        onSave={(data) => {
-          console.log("Salvar conta:", data);
-          setOpenAccountDialog(false);
-        }}
+        onSave={handleSave}
       />
     </>
   );

@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogContent,
   IconButton,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -16,115 +17,149 @@ export default function BankAccountDialog({
   onClose,
   onSave,
 }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    createdAt: "",
-    updatedAt: "",
-  });
+  //Controle de atributos do formulário
+  const [formData, setFormData] = useState(() => ({
+    name: initialData?.name || "",
+    description: initialData?.description || "",
+    createdAt: initialData?.createdAt || "",
+    updatedAt: initialData?.updatedAt || "",
+  }));
+
+  //controle de validacao do formulário
+  const [formErrors, setFormErrors] = useState({});
+
+  const validateForm = () => {
+    let tempErrors = {};
+
+    if (!formData.name.trim()) tempErrors.name = "Preencha o nome da conta";
+    if (!formData.description.trim())
+      tempErrors.description = "Preencha a descrição";
+
+    setFormErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
 
   useEffect(() => {
-    if (initialData) {
+    if (!open) {
+      setFormErrors({});
+      if (!initialData) {
+        setFormData({
+          name: "",
+          description: "",
+          createdAt: "",
+          updatedAt: "",
+        });
+      }
+    } else if (initialData) {
       setFormData({
         name: initialData.name || "",
         description: initialData.description || "",
         createdAt: initialData.createdAt || "",
         updatedAt: initialData.updatedAt || "",
       });
-    } else {
-      setFormData({ name: "", description: "", createdAt: "", updatedAt: "" });
+      setFormErrors({});
     }
-  }, [initialData]);
+  }, [open, initialData]);
 
+  // Manipulador de mudanças nos campos do formulário
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Manipulador de submissão do formulário
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.description) {
-      alert("Nome da conta e descrição são obrigatórios!");
+    if (!validateForm()) {
+      console.log("Erros de validação:", formErrors);
       return;
     }
+    //enviar dados para a api e tratar
+
+    //emitir o evento para o componente pai
     onSave(formData);
   };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogContent component="form" onSubmit={handleSubmit}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            Contas
-          </Typography>
-          <IconButton onClick={onClose} size="small">
-            <CloseIcon />
-          </IconButton>
-        </Box>
+      <DialogContent>
+        <form onSubmit={handleSubmit} noValidate>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              Contas
+            </Typography>
+            <IconButton onClick={onClose} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField
-            fullWidth
-            type="text"
-            label="Nome da conta"
-            size="small"
-            required
-            value={formData.name}
-            onChange={(e) => handleChange("name", e.target.value)}
-          />
-          <TextField
-            fullWidth
-            type="text"
-            label="Descrição"
-            size="small"
-            required
-            value={formData.description}
-            onChange={(e) => handleChange("description", e.target.value)}
-          />
-          <TextField
-            fullWidth
-            type="text"
-            label="Adicionada em"
-            size="small"
-            value={formData.createdAt}
-            onChange={(e) => handleChange("createdAt", e.target.value)}
-            disabled
-          />
-          <TextField
-            fullWidth
-            type="text"
-            label="Atualizada em"
-            size="small"
-            value={formData.updatedAt}
-            onChange={(e) => handleChange("updatedAt", e.target.value)}
-            disabled
-          />
-        </Box>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <TextField
+              fullWidth
+              label="Nome da conta"
+              size="small"
+              required
+              value={formData.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+              error={!!formErrors.name}
+              helperText={formErrors.name}
+            />
+            <TextField
+              fullWidth
+              label="Descrição"
+              size="small"
+              required
+              value={formData.description}
+              onChange={(e) => handleChange("description", e.target.value)}
+              error={!!formErrors.description}
+              helperText={formErrors.description}
+            />
+            <TextField
+              fullWidth
+              label="Adicionada em"
+              size="small"
+              value={formData.createdAt}
+              disabled
+            />
+            <TextField
+              fullWidth
+              label="Atualizada em"
+              size="small"
+              value={formData.updatedAt}
+              disabled
+            />
+          </Box>
 
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
-          <Button type="submit" size="large" variant="contained" color="primary">
-            Salvar
-          </Button>
-          {initialData && (
+          <Stack
+            sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}
+          >
             <Button
-              type="button"
+              type="submit"
               size="large"
               variant="contained"
-              color="error"
-              onClick={() => {
-                console.log("Excluir conta", initialData);
-              }}
+              color="primary"
             >
-              Excluir
+              Salvar
             </Button>
-          )}
-        </Box>
+            {initialData && (
+              <Button
+                type="button"
+                size="large"
+                variant="contained"
+                color="error"
+                onClick={() => console.log("Excluir conta", initialData)}
+              >
+                Excluir
+              </Button>
+            )}
+          </Stack>
+        </form>
       </DialogContent>
     </Dialog>
   );

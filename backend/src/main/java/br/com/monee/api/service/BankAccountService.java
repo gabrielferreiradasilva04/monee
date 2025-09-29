@@ -33,8 +33,8 @@ public class BankAccountService {
         return this.bankAccountMapper.toResponseDto(this.bankAccountRepository.save(bankAccountEntity));
     }
 
-    public List<BankAccountEntity> getUserBankAccounts(UUID userId){
-        return this.bankAccountRepository.findByUserId(userId);
+    public List<BankAccountResponseDTO> getUserBankAccounts(UUID userId){
+        return this.bankAccountRepository.findByUserId(userId).stream().map(this.bankAccountMapper::toResponseDto).toList();
     }
 
     public BankAccountEntity update ( UUID accountId, BankAccountRequestDTO bankAccountRequestDTO ) {

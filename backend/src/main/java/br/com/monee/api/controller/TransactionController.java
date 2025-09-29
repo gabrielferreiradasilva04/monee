@@ -37,7 +37,7 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{userId")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<TransactionResponseDTO>> getUserTransactions(@PathVariable UUID userId){
         return ResponseEntity.ok(this.transactionService.getAllUserTransactions(userId));
     }

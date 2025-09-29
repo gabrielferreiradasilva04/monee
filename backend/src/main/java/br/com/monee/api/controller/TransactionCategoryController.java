@@ -1,9 +1,11 @@
 package br.com.monee.api.controller;
 
+import br.com.monee.api.domain.transaction.category.TransactionCategoryResponseDTO;
 import br.com.monee.api.service.TransactionCategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -18,7 +20,7 @@ public class TransactionCategoryController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getAllTransactions(@PathVariable UUID userId){
+    public ResponseEntity<List<TransactionCategoryResponseDTO>> getAllTransactions(@PathVariable UUID userId){
         return ResponseEntity.ok().body(this.transactionCategoryService.getAllTransactions(userId));
     }
 

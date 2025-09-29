@@ -20,7 +20,7 @@ public class TransactionCategoriesController {
     public TransactionCategoriesController(TransactionCategoryService transactionCategoryService) {
         this.transactionCategoryService = transactionCategoryService;
     }
-    @PostMapping("/{userId")
+    @PostMapping("/{userId}")
     public ResponseEntity<TransactionCategoryResponseDTO> save(@PathVariable UUID userId, TransactionCategoryRequestDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.transactionCategoryService.save(userId, dto));
     }

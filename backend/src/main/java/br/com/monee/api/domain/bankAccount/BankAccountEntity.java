@@ -36,9 +36,9 @@ public class BankAccountEntity {
 
     //Variáveis de auditoria
     @CreatedDate
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
     @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime updatedAt;
 
     //Relacionamentos
     @ManyToOne

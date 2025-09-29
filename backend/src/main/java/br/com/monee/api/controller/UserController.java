@@ -20,25 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final UserService userService;
-    private final TransactionMapper transactionMapper;
-    private final BankAccountService bankAccountService;
-    private final TransactionService transactionService;
-    private final TagService tagService;
-    private final CreditCardService creditCardService;
-    private final TransactionCategoryService transactionCategoryService;
 
-
-    public UserController(UserService userService, TransactionMapper transactionMapper,
-                          BankAccountService bankAccountService, TransactionService transactionService, TagService tagService, CreditCardService creditCardService, TransactionCategoryService transactionCategoryService)
-    {
-        this.userService = userService;
-        this.transactionMapper = transactionMapper;
-        this.bankAccountService = bankAccountService;
-        this.transactionService = transactionService;
-        this.tagService = tagService;
-        this.creditCardService = creditCardService;
-        this.transactionCategoryService = transactionCategoryService;
-    }
 
 }

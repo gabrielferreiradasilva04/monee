@@ -15,6 +15,5 @@ public interface BankAccountMapper {
 
     @Mapping(target = "user", ignore = true)
     BankAccountEntity requestToEntity (BankAccountRequestDTO requestDTO);
-
     BankAccountResponseDTO toResponseDto(BankAccountEntity entity );
 }

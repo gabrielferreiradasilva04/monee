@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useState, useEffect } from "react";
+import { api } from "../../services/axiosConfig.js"
+import { useNotification } from "../context/NotificationProvider.jsx";
 
 export default function BankAccountDialog({
   initialData,
@@ -17,6 +19,9 @@ export default function BankAccountDialog({
   onClose,
   onSave,
 }) {
+  //notificações
+  const { showNotification } = useNotification();
+  
   //Controle de atributos do formulário
   const [formData, setFormData] = useState(() => ({
     name: initialData?.name || "",
@@ -67,13 +72,24 @@ export default function BankAccountDialog({
   };
 
   // Manipulador de submissão do formulário
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
       console.log("Erros de validação:", formErrors);
       return;
     }
+    
     //enviar dados para a api e tratar
+    await api.post("/bank-accounts", formData , {withCredentials: true})
+    .then((response) => {
+      showNotification("Conta bancária salva com sucesso", "success");
+    })
+    .catch((error) => {
+      console.error("Erro ao salvar conta bancária:", error);
+      const errorMessage = error.response?.data?.message || "Erro ao salvar conta bancária";
+      showNotification(errorMessage, "error");
+      return;
+    });
 
     //emitir o evento para o componente pai
     onSave(formData);

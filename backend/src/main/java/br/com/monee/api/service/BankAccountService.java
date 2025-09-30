@@ -37,6 +37,12 @@ public class BankAccountService {
         return this.bankAccountRepository.findByUserId(userId).stream().map(this.bankAccountMapper::toResponseDto).toList();
     }
 
+    public void delete(UUID bankAccountId){
+        BankAccountEntity bankAccount = bankAccountRepository.findById(bankAccountId)
+                .orElseThrow(() -> new EntityNotFoundException("Conta inexistente"));
+        bankAccountRepository.delete(bankAccount);
+    }
+
     public BankAccountEntity update ( UUID accountId, BankAccountRequestDTO bankAccountRequestDTO ) {
 
         BankAccountEntity bankAccountEntity = this.bankAccountMapper.requestToEntity(bankAccountRequestDTO);
@@ -48,6 +54,8 @@ public class BankAccountService {
         existingAccount.setAccountName(bankAccountEntity.getAccountName());
         existingAccount.setIcon(bankAccountEntity.getIcon());
         existingAccount.setDescription(bankAccountEntity.getDescription());
+
+        this.normalizeData(existingAccount);
 
         return this.bankAccountRepository.save(existingAccount);
     }
@@ -65,4 +73,9 @@ public class BankAccountService {
                         "Conta bancária não encontrada para este usuário"
                 ));
     }
+    private void normalizeData(BankAccountEntity entity){
+        entity.setAccountName(entity.getAccountName().trim().toUpperCase());
+        entity.setDescription(entity.getDescription().trim());
+    }
+
 }

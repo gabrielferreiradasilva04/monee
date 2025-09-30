@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public record BankAccountResponseDTO (UUID id, String accountName, String description,
                                       @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy") LocalDateTime createdAt,
-                                      @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy") LocalDateTime updatedAt,
+                                      @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime updatedAt,
                                       String icon, String color){
 }

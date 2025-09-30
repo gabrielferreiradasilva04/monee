@@ -25,6 +25,17 @@ public class BankAccountController {
     public ResponseEntity<BankAccountResponseDTO> save(@PathVariable UUID userId, @RequestBody @Valid BankAccountRequestDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.bankAccountService.save(userId, dto));
     }
+    @PutMapping("/{bankAccountId}")
+    public ResponseEntity<Void> update(@PathVariable UUID bankAccountId, @RequestBody @Valid BankAccountRequestDTO bankAccountRequestDTO){
+        this.bankAccountService.update(bankAccountId, bankAccountRequestDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{bankAccountId}")
+    public ResponseEntity<Void> delete(@PathVariable UUID bankAccountId){
+        this.bankAccountService.delete(bankAccountId);
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<BankAccountResponseDTO>> getAllUserBankAccounts(@PathVariable UUID userId){

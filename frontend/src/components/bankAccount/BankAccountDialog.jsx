@@ -3,6 +3,7 @@ import {
   Button,
   Dialog,
   DialogContent,
+  Divider,
   IconButton,
   Stack,
   TextField,
@@ -10,8 +11,10 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useState, useEffect } from "react";
-import { api } from "../../services/axiosConfig.js"
+import { api } from "../../services/axiosConfig.js";
 import { useNotification } from "../context/NotificationProvider.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
+import ConfirmDialog from "../ConfirmDialog.jsx";
 
 export default function BankAccountDialog({
   initialData,
@@ -21,35 +24,40 @@ export default function BankAccountDialog({
 }) {
   //notificações
   const { showNotification } = useNotification();
-  
+  const { user } = useAuth();
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+
+  //manipular o dialogo de confirmação de exclusão
+  const handleOpenConfirmDialog = () => {
+    setOpenConfirmDialog(true);
+  };
+
+  const handleCancelDialog = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  const handleConfirmDialog = () => {
+    setOpenConfirmDialog(false);
+    deleteBankAccount();
+  };
+
   //Controle de atributos do formulário
   const [formData, setFormData] = useState(() => ({
-    name: initialData?.name || "",
+    id: initialData?.id || "",
+    accountName: initialData?.accountName || "",
     description: initialData?.description || "",
     createdAt: initialData?.createdAt || "",
     updatedAt: initialData?.updatedAt || "",
   }));
 
-  //controle de validacao do formulário
-  const [formErrors, setFormErrors] = useState({});
-
-  const validateForm = () => {
-    let tempErrors = {};
-
-    if (!formData.name.trim()) tempErrors.name = "Preencha o nome da conta";
-    if (!formData.description.trim())
-      tempErrors.description = "Preencha a descrição";
-
-    setFormErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
-  };
-
+  //resetar o formulário quando o dialog for aberto ou fechado
   useEffect(() => {
     if (!open) {
       setFormErrors({});
       if (!initialData) {
         setFormData({
-          name: "",
+          id: "",
+          accountName: "",
           description: "",
           createdAt: "",
           updatedAt: "",
@@ -57,7 +65,8 @@ export default function BankAccountDialog({
       }
     } else if (initialData) {
       setFormData({
-        name: initialData.name || "",
+        id: initialData.id || "",
+        accountName: initialData.accountName || "",
         description: initialData.description || "",
         createdAt: initialData.createdAt || "",
         updatedAt: initialData.updatedAt || "",
@@ -71,34 +80,78 @@ export default function BankAccountDialog({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Manipulador de submissão do formulário
-  const handleSubmit = async (e) => {
+  //controle de validacao do formulário
+  const [formErrors, setFormErrors] = useState({});
+
+  const validateForm = () => {
+    let tempErrors = {};
+
+    if (!formData.accountName.trim())
+      tempErrors.accountName = "Preencha o nome da conta";
+    if (!formData.description.trim())
+      tempErrors.description = "Preencha a descrição";
+
+    setFormErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
+  // enviar formulário
+  const submitBankAccount = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-      console.log("Erros de validação:", formErrors);
       return;
     }
-    
-    //enviar dados para a api e tratar
-    await api.post("/bank-accounts", formData , {withCredentials: true})
-    .then((response) => {
-      showNotification("Conta bancária salva com sucesso", "success");
-    })
-    .catch((error) => {
-      console.error("Erro ao salvar conta bancária:", error);
-      const errorMessage = error.response?.data?.message || "Erro ao salvar conta bancária";
-      showNotification(errorMessage, "error");
-      return;
-    });
 
-    //emitir o evento para o componente pai
-    onSave(formData);
+    const payload = {
+      accountName: formData.accountName,
+      description: formData.description,
+      icon: "",
+      color: "",
+    };
+
+    try {
+      if (initialData) {
+        await api
+          .put(`/bank-accounts/${initialData.id}`, payload, { withCredentials: true })
+          .then((response) => {
+            showNotification(
+              "Conta bancária atualizada com sucesso",
+              "success"
+            );
+          });
+      } else {
+        await api
+          .post(`/bank-accounts/${user.id}`, payload, { withCredentials: true })
+          .then((response) => {
+            showNotification("Conta bancária criada com sucesso", "success");
+          });
+      }
+      onSave();
+    } catch (error) {
+      console.error("Erro ao salvar conta bancária:", error);
+      const errorMessage =
+        error.response?.data?.message || "Erro ao salvar conta bancária";
+      showNotification(errorMessage, "error");
+    }
   };
+
+  const deleteBankAccount = async () => {
+  try {
+    await api.delete(`/bank-accounts/${initialData.id}`, { withCredentials: true });
+    showNotification("Conta excluída com sucesso!");
+    onSave();
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || "Erro ao excluir a conta bancária";
+    showNotification(errorMessage, "error");
+  }
+};
+
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogContent>
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={submitBankAccount} noValidate>
           <Box
             sx={{
               display: "flex",
@@ -108,7 +161,7 @@ export default function BankAccountDialog({
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Contas
+              Gerenciar Conta
             </Typography>
             <IconButton onClick={onClose} size="small">
               <CloseIcon />
@@ -121,10 +174,10 @@ export default function BankAccountDialog({
               label="Nome da conta"
               size="small"
               required
-              value={formData.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              error={!!formErrors.name}
-              helperText={formErrors.name}
+              value={formData.accountName}
+              onChange={(e) => handleChange("accountName", e.target.value)}
+              error={!!formErrors.accountName}
+              helperText={formErrors.accountName}
             />
             <TextField
               fullWidth
@@ -151,25 +204,30 @@ export default function BankAccountDialog({
               disabled
             />
           </Box>
-
+          <Divider sx={{ margin: 2 }} />
           <Stack
-            sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}
+            direction="row"
+            spacing={1}
+            justifyContent="flex-end"
+            sx={{ mt: 3 }}
           >
             <Button
               type="submit"
-              size="large"
               variant="contained"
               color="primary"
+              size="small"
+              sx={{ minWidth: 100 }}
             >
               Salvar
             </Button>
             {initialData && (
               <Button
                 type="button"
-                size="large"
                 variant="contained"
                 color="error"
-                onClick={() => console.log("Excluir conta", initialData)}
+                size="small"
+                sx={{ minWidth: 100 }}
+                onClick={handleOpenConfirmDialog}
               >
                 Excluir
               </Button>
@@ -177,6 +235,15 @@ export default function BankAccountDialog({
           </Stack>
         </form>
       </DialogContent>
+      <ConfirmDialog
+        open={openConfirmDialog}
+        title={"Exclusão de Conta Bancária"}
+        dialogContent={`Deseja realmente excluir a conta bancária${
+          initialData?.accountName ? `: ${initialData.accountName}` : ""
+        }?`}
+        onConfirm={handleConfirmDialog}
+        onCancel={handleCancelDialog}
+      />
     </Dialog>
   );
 }

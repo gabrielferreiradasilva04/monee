@@ -7,6 +7,5 @@ import java.time.LocalDate;
 
 public record BankAccountRequestDTO(@NotBlank(message = "Nome da conta não pode ser nulo") String accountName,
                                     @NotBlank(message = "Descrição não pode ser nula") String description,
-                                    String icon, String color, @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy") LocalDate createdAt,
-                                    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy") LocalDate updatedAt) {
+                                    String icon, String color) {
 }

@@ -20,9 +20,9 @@ export default function AppRoutes() {
           <Route
             path="/"
             element={
-            //  <ProtectedRoute>
+              <ProtectedRoute>
                 <MainLayout />
-           //   </ProtectedRoute>
+              </ProtectedRoute>
             }
           >
             {/*Rotas padrões protegidas*/}

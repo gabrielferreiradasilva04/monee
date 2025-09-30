@@ -4,20 +4,53 @@ import { Box, Button, Typography } from "@mui/material";
 import SearchBar from "../components/SearchBar";
 import AddIcon from "@mui/icons-material/Add";
 import BankAccountDialog from "../components/bankAccount/BankAccountDialog";
+import { useAuth } from "../components/context/AuthContext.jsx";
+import { api } from "../services/axiosConfig.js";
+import { useNotification } from "../components/context/NotificationProvider.jsx";
+import CustomItemList from "../components/CustomItemList.jsx";
 
 export default function BankAccounts() {
   const [openAccountDialog, setOpenAccountDialog] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const { user } = useAuth();
+  const [bankAccounts, setBankAccounts] = useState([]);
+  const { showNotification } = useNotification();
 
+  // abrir dialog de conta bancária
   const handleOpenDialog = (account = null) => {
     setSelectedAccount(account);
     setOpenAccountDialog(true);
   };
-  
+
+  // identificar quando o dialog for fechado
   const handleSave = () => {
     setOpenAccountDialog(false);
-    // Recarregar a lista de contas ou atualizar o estado conforme necessário
-  }
+    setSelectedAccount(null);
+    fetchBankAccounts();
+  };
+  // identificar quando o dialog for fechado sem alterações
+  const handleClose = () => {
+    setOpenAccountDialog(false);
+    setSelectedAccount(null);
+  };
+
+  // buscar contas bancárias
+  const fetchBankAccounts = () => {
+    api
+      .get(`/bank-accounts/${user.id}`, { withCredentials: true })
+      .then((response) => {
+        setBankAccounts(response.data);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar contas bancárias:", error);
+        showNotification("Erro ao buscar contas bancárias", "error");
+      });
+  };
+
+  // carregar contas bancárias ao montar o componente
+  React.useEffect(() => {
+    fetchBankAccounts();
+  }, []);
 
   return (
     <>
@@ -52,14 +85,23 @@ export default function BankAccounts() {
           </Box>
 
           <Box>
-            <span>pesquisas</span>
+            {bankAccounts.map((account) => (
+              <CustomItemList
+                key={account.id}
+                title={account.accountName}
+                description={account.description}
+                createdAt={account.createdAt}
+                updatedAt={account}
+                onEdit={() => handleOpenDialog(account)}
+              />
+            ))}
           </Box>
         </Box>
       </PageContainer>
       <BankAccountDialog
         initialData={selectedAccount}
         open={openAccountDialog}
-        onClose={() => setOpenAccountDialog(false)}
+        onClose={handleClose}
         onSave={handleSave}
       />
     </>

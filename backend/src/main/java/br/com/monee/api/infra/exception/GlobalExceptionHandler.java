@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +101,16 @@ public class GlobalExceptionHandler {
         return new ResponseErrorDTO(
                 HttpStatus.UNAUTHORIZED.value(),
                 "Credenciais inválidas ou desabilitadas. Verifique",
+                null
+        );
+    }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseErrorDTO handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e){
+        return new ResponseErrorDTO(
+                HttpStatus.CONFLICT.value(),
+                "Já existe um cadastro com esses dados",
                 null
         );
     }

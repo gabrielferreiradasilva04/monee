@@ -32,11 +32,11 @@ public class UserEntity implements UserDetails {
     private UUID id;
     @Column(nullable = false, length = 150)
     private String name;
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false, length = 200, unique = true)
     private String email;
     @Column(nullable = false, length = 250)
     private String password;
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String phone;
     private String profilePhotoUrl;
     @Column(nullable = false)

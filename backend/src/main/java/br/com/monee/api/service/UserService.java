@@ -39,4 +39,6 @@ public class UserService {
     public UserDefaultDataDTO getUserDefaultData(UserEntity entity){
         return this.userMapper.toDefaultDataDTO(entity);
     }
+
+
 }

@@ -7,6 +7,10 @@ import br.com.monee.api.domain.user.UserLoginDTO;
 import br.com.monee.api.domain.user.UserRequestDTO;
 import br.com.monee.api.service.TokenService;
 import br.com.monee.api.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Autenticação", description = "Endpoints destinados ao fluxo de autenticação básico do usuário")
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
@@ -35,6 +40,14 @@ public class AuthenticationController {
         this.userMapper = userMapper;
     }
 
+    @Operation(
+            summary = "Registrar usuário",
+            description = "Realiza o registro do usuário na aplicação"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso, sem erros"),
+            @ApiResponse(responseCode = "409", description = "Usuário já existente no banco de dados")
+    })
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid UserRequestDTO dto){
         UserEntity userEntity = this.userRequestMapper.toEntity(dto);

@@ -1,15 +1,17 @@
 package br.com.monee.api.infra.dto;
 
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public class PageDTO<T> {
     public List<T> content;
     public int pageNumber;
     public int pageSize;
-    public int totalElements;
+    public long totalElements;
     public int totalPages;
 
-    public PageDTO(List<T> content, int pageNumber, int pageSize, int totalElements, int totalPages) {
+    public PageDTO(List<T> content, int pageNumber, int pageSize, long totalElements, int totalPages) {
         this.content = content;
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
@@ -20,6 +22,13 @@ public class PageDTO<T> {
     public PageDTO() {
     }
 
+    public PageDTO(Page page){
+        this.content = page.getContent();
+        this.pageNumber = page.getTotalPages();
+        this.pageSize = page.getSize();
+        this.totalElements = page.getTotalElements();
+        this.totalPages = page.getTotalPages();
+    }
 
 
     public List<T> getContent() {
@@ -46,11 +55,11 @@ public class PageDTO<T> {
         this.pageSize = pageSize;
     }
 
-    public int getTotalElements() {
+    public long getTotalElements() {
         return totalElements;
     }
 
-    public void setTotalElements(int totalElements) {
+    public void setTotalElements(long totalElements) {
         this.totalElements = totalElements;
     }
 

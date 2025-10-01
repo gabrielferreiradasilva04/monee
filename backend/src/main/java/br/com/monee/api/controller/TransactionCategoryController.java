@@ -2,9 +2,11 @@ package br.com.monee.api.controller;
 
 import br.com.monee.api.domain.transaction.category.TransactionCategoryRequestDTO;
 import br.com.monee.api.domain.transaction.category.TransactionCategoryResponseDTO;
+import br.com.monee.api.infra.dto.PageDTO;
 import br.com.monee.api.service.TransactionCategoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +40,10 @@ public class TransactionCategoryController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<TransactionCategoryResponseDTO>> getAllTransactions(@PathVariable UUID userId){
-        return ResponseEntity.ok().body(this.transactionCategoryService.getAllTransactions(userId));
+    public ResponseEntity<PageDTO<TransactionCategoryResponseDTO>> getAllTransactions(@PathVariable UUID userId,
+                                                                                      Pageable pageable,
+                                                                                      @RequestParam(required = false) String categoryTitle){
+        return ResponseEntity.ok().body(this.transactionCategoryService.getAllTransactions(categoryTitle, userId, pageable));
     }
 
 

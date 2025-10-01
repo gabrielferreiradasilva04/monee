@@ -1,6 +1,8 @@
 package br.com.monee.api.infra.exception;
 
 import br.com.monee.api.infra.exception.custom.DuplicateRecordException;
+import br.com.monee.api.infra.exception.custom.ImmutableSystemEntityException;
+import br.com.monee.api.infra.exception.custom.UnauthorizedEntityAccessException;
 import br.com.monee.api.infra.exception.custom.UnprocessableEntityException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -111,6 +113,26 @@ public class GlobalExceptionHandler {
         return new ResponseErrorDTO(
                 HttpStatus.CONFLICT.value(),
                 "Já existe um cadastro com esses dados",
+                null
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseErrorDTO handleImmutableSystemEntityException(ImmutableSystemEntityException e){
+        return new ResponseErrorDTO(
+                HttpStatus.UNAUTHORIZED.value(),
+                e.getMessage(),
+                null
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseErrorDTO ImmutableSystemEntityException(UnauthorizedEntityAccessException e){
+        return new ResponseErrorDTO(
+                HttpStatus.UNAUTHORIZED.value(),
+                e.getMessage(),
                 null
         );
     }

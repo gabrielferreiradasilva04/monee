@@ -1,5 +1,7 @@
 package br.com.monee.api.service;
 
+import br.com.monee.api.infra.exception.custom.ImmutableSystemEntityException;
+import br.com.monee.api.infra.exception.custom.UnauthorizedEntityAccessException;
 import br.com.monee.api.util.mapper.TransactionCategoryMapper;
 import br.com.monee.api.domain.transaction.category.TransactionCategoryEntity;
 import br.com.monee.api.domain.user.UserEntity;
@@ -10,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -42,5 +45,21 @@ public class TransactionCategoryService {
 
         entity.setUser(user);
         return this.transactionCategoryMapper.entityToResponse(this.transactionCategoryRepository.save(entity));
+    }
+
+    public void update(UUID transactionId, UUID userId, TransactionCategoryRequestDTO dto){
+        Optional<TransactionCategoryEntity> optional = this.transactionCategoryRepository.findById(transactionId);
+        if(optional.isEmpty()) throw new EntityNotFoundException("Transação não encontrada");
+        if(optional.get().getUser() == null) throw new ImmutableSystemEntityException("Categoria padrão do sistema. Imutável");
+        if(!optional.get().getUser().getId().equals(userId)) throw new UnauthorizedEntityAccessException("Sem autorização para alterar");
+
+        TransactionCategoryEntity entity = optional.get();
+
+        entity.setTitle(dto.title());
+        entity.setColor(dto.color());
+        entity.setIcon(dto.icon());
+        entity.setDescription(dto.description());
+
+        this.transactionCategoryRepository.save(entity);
     }
 }

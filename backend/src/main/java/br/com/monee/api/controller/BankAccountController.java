@@ -25,9 +25,10 @@ public class BankAccountController {
     public ResponseEntity<BankAccountResponseDTO> save(@PathVariable UUID userId, @RequestBody @Valid BankAccountRequestDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.bankAccountService.save(userId, dto));
     }
-    @PutMapping("/{bankAccountId}")
-    public ResponseEntity<Void> update(@PathVariable UUID bankAccountId, @RequestBody @Valid BankAccountRequestDTO bankAccountRequestDTO){
-        this.bankAccountService.update(bankAccountId, bankAccountRequestDTO);
+    @PutMapping("/{userId}/{bankAccountId}")
+    public ResponseEntity<Void> update(@PathVariable UUID bankAccountId, @RequestBody @Valid BankAccountRequestDTO bankAccountRequestDTO,
+                                       @PathVariable UUID userId){
+        this.bankAccountService.update(bankAccountId, bankAccountRequestDTO, userId);
         return ResponseEntity.ok().build();
     }
 

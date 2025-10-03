@@ -1,5 +1,6 @@
 package br.com.monee.api.service;
 
+import br.com.monee.api.infra.exception.custom.UnauthorizedEntityAccessException;
 import br.com.monee.api.util.mapper.BankAccountMapper;
 import br.com.monee.api.domain.bankAccount.BankAccountEntity;
 import br.com.monee.api.domain.user.UserEntity;
@@ -43,11 +44,13 @@ public class BankAccountService {
         bankAccountRepository.delete(bankAccount);
     }
 
-    public BankAccountEntity update ( UUID accountId, BankAccountRequestDTO bankAccountRequestDTO ) {
+    public BankAccountEntity update ( UUID accountId, BankAccountRequestDTO bankAccountRequestDTO, UUID userId ) {
 
         BankAccountEntity bankAccountEntity = this.bankAccountMapper.requestToEntity(bankAccountRequestDTO);
         Optional<BankAccountEntity> optionalExistingAccount = this.bankAccountRepository.findById(accountId);
+
         if(optionalExistingAccount.isEmpty()) throw new EntityNotFoundException("Conta bancaria nao encontrada");
+        if(!userId.equals(bankAccountEntity.getUser().getId())) throw new UnauthorizedEntityAccessException("Alteração não autorizada");
 
         var existingAccount = optionalExistingAccount.get();
         //atualizar os dados da conta existente

@@ -54,7 +54,7 @@ public class TransactionService {
                 .toResponseDto(this.transactionRepository.save(transactionEntity));
     }
     
-    public List<TransactionResponseDTO> getAllUserTransactions(UUID userId ) {
+    public List<TransactionResponseDTO> getAllUserTransactions( UUID userId ) {
         List<TransactionEntity> userTransactions = this.transactionRepository.findAllByUserId(userId);
         return userTransactions
                 .stream()
@@ -63,14 +63,10 @@ public class TransactionService {
     }
 
     public void addTags(UUID userId, UUID transactionId, List<UUID> tagIds){
-        TransactionEntity transactionEntity = this.transactionRepository.findByIdAndUserId(transactionId, userId)
-                .orElseThrow(()-> new EntityNotFoundException(
-                        "Transação não encontrada"
-                ));
-        List<TagEntity> tags = this.tagService.getAllById(tagIds);
-
-        transactionEntity.setTags(tags);
-        this.transactionRepository.save(transactionEntity);
+        //Receber a transactionId, receber a lista de tags adicionadas
+        //Buscar as tags por id no banco
+        //Buscar as tags já vinculadas na entidade
+        //Vincular as novas tags à entidade sem remover as tags antigas
     }
     
 }

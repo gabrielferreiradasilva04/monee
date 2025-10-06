@@ -1,5 +1,6 @@
 package br.com.monee.api.domain.transaction.category;
 
+import br.com.monee.api.domain.OwnedEntity;
 import br.com.monee.api.domain.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = "transaction_category")
-public class TransactionCategoryEntity {
+public class TransactionCategoryEntity implements OwnedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -34,5 +35,11 @@ public class TransactionCategoryEntity {
         this.description = description;
         this.icon = icon;
         this.color = color;
+    }
+
+
+    @Override
+    public UUID getUserId() {
+        return this.getUser().getId();
     }
 }

@@ -9,6 +9,7 @@ import br.com.monee.api.domain.user.UserEntity;
 import br.com.monee.api.domain.transaction.category.TransactionCategoryRequestDTO;
 import br.com.monee.api.domain.transaction.category.TransactionCategoryResponseDTO;
 import br.com.monee.api.repository.TransactionCategoryRepository;
+import br.com.monee.api.util.validator.OwnerValidator;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +24,15 @@ public class TransactionCategoryService {
     private final TransactionCategoryRepository transactionCategoryRepository;
     private final UserService userService;
     private final TransactionCategoryMapper transactionCategoryMapper;
+    private final OwnerValidator ownerValidator;
 
-    public TransactionCategoryService(TransactionCategoryRepository transactionCategoryRepository, UserService userService, TransactionCategoryMapper transactionCategoryMapper) {
+    private final String notFoundMessage = "Categoria de transação não encontrada";
+
+    public TransactionCategoryService(TransactionCategoryRepository transactionCategoryRepository, UserService userService, TransactionCategoryMapper transactionCategoryMapper, OwnerValidator ownerValidator) {
         this.transactionCategoryRepository = transactionCategoryRepository;
         this.userService = userService;
         this.transactionCategoryMapper = transactionCategoryMapper;
+        this.ownerValidator = ownerValidator;
     }
 
     public TransactionCategoryEntity getById(UUID transactionCategoryId) {
@@ -51,19 +56,22 @@ public class TransactionCategoryService {
         return this.transactionCategoryMapper.entityToResponse(this.transactionCategoryRepository.save(entity));
     }
 
-    public void update(UUID transactionId, UUID userId, TransactionCategoryRequestDTO dto){
-        Optional<TransactionCategoryEntity> optional = this.transactionCategoryRepository.findById(transactionId);
-        if(optional.isEmpty()) throw new EntityNotFoundException("Transação não encontrada");
-        if(optional.get().getUser() == null) throw new ImmutableSystemEntityException("Categoria padrão do sistema. Imutável");
-        if(!optional.get().getUser().getId().equals(userId)) throw new UnauthorizedEntityAccessException("Sem autorização para alterar");
+    public void update(UUID transactionCategoryId, TransactionCategoryRequestDTO dto){
+        TransactionCategoryEntity transactionCategoryEntity  = this.transactionCategoryRepository.findById(transactionCategoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Categoria de transação não encontrada"));
 
-        TransactionCategoryEntity entity = optional.get();
+        this.ownerValidator.validateOwnership(transactionCategoryEntity);
 
-        entity.setTitle(dto.title());
-        entity.setColor(dto.color());
-        entity.setIcon(dto.icon());
-        entity.setDescription(dto.description());
+        transactionCategoryEntity.setTitle(dto.title());
+        transactionCategoryEntity.setColor(dto.color());
+        transactionCategoryEntity.setIcon(dto.icon());
+        transactionCategoryEntity.setDescription(dto.description());
 
-        this.transactionCategoryRepository.save(entity);
+        this.transactionCategoryRepository.save(transactionCategoryEntity);
+    }
+
+    public void delete(UUID transactionCategoryId){
+        TransactionCategoryEntity transactionCategoryEntity = this.transactionCategoryRepository.findById(transactionCategoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Categoria de transação não encontrada"));
     }
 }

@@ -31,12 +31,17 @@ public class TransactionCategoryController {
                                                                @RequestBody @Valid TransactionCategoryRequestDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.transactionCategoryService.save(userId, dto));
     }
-    @PutMapping("/{userId}/{transactionId}")
-    public ResponseEntity<Void> update(@PathVariable UUID transactionId, @PathVariable UUID userId,
+
+    @PutMapping("/{transactionCategoryId}")
+    public ResponseEntity<Void> update(@PathVariable UUID transactionCategoryId,
                                        @RequestBody @Valid TransactionCategoryRequestDTO dto){
-        this.transactionCategoryService.update(transactionId, userId, dto);
+        this.transactionCategoryService.update(transactionCategoryId, dto);
         return ResponseEntity.ok().build();
 
+    }
+
+    public ResponseEntity<Void> delete(@PathVariable UUID transactionId, UUID userId){
+        return null;
     }
 
     @GetMapping("/{userId}")
@@ -45,6 +50,7 @@ public class TransactionCategoryController {
                                                                                       @RequestParam(required = false) String categoryTitle){
         return ResponseEntity.ok().body(this.transactionCategoryService.getAllTransactions(categoryTitle, userId, pageable));
     }
+
 
 
 }

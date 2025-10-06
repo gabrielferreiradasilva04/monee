@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Typography, Link, Box, useTheme, Stack, IconButton } from "@mui/material";
+import { Container, Typography, Link, Box, Stack, IconButton } from "@mui/material";
 import { Facebook, Twitter, LinkedIn, Copyright} from "@mui/icons-material";
 export default function AppFooter() {
   return (

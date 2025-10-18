@@ -82,7 +82,7 @@ export default function LoginForm() {
           maxWidth: "450px",
           borderRadius: "20px",
         }}
-        elevation={4}
+        elevation={12}
       >
         <Typography
           sx={{ fontWeight: "bold", textAlign: "center" }}

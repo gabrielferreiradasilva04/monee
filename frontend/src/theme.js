@@ -3,30 +3,30 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#22C55E', // azul principal
+      main: '#22C55E',
     },
     secondary: {
-      main: '#0A1744', // rosa/vinho secundário
+      main: '#0A1744', 
     },
     success: {
-      main: '#4caf50', // verde para status positivo
+      main: '#4caf50', 
     },
     warning: {
-      main: '#ff9800', // laranja para alertas
+      main: '#ff9800', 
     },
     error: {
-      main: '#f44336', // vermelho para erros
+      main: '#f44336', 
     },
     action: {
         main: '#F97316'
     },
     background: {
-      default: '#f5f5f5', // fundo da aplicação
-      paper: '#ffffff',   // fundo de cards/painéis
+      default: '#f5f5f5', 
+      paper: '#ffffff',   
     },
   },
   typography: {
-    fontFamily: 'Roboto, Arial, sans-serif', // padrão do MUI
+    fontFamily: 'Roboto, Arial, sans-serif', 
   },
 });
 

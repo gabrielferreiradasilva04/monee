@@ -14,10 +14,10 @@ function Login() {
             display: "flex",
             marginBottom: "20px",
             justifyContent: "center",
-            alignItems: "center",
+            alignItems: "center"
           }}
         >
-          <Box sx={{ display: "flex", borderRadius: "30px" }}>
+          <Box sx={{ display: "flex", borderRadius: "30px"}}>
             <img
               src="src/assets/moneeLogo2.png"
               alt="LogoMonee"
@@ -25,7 +25,7 @@ function Login() {
             />
           </Box>
         </Box>
-        <Container sx={{ display: "flex", justifyContent: "center" }}>
+        <Container sx={{ display: "flex", justifyContent: "center"}}>
           <LoginForm />
         </Container>
       </Box>

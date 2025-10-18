@@ -112,7 +112,9 @@ export default function BankAccountDialog({
     try {
       if (initialData) {
         await api
-          .put(`/bank-accounts/${initialData.id}`, payload, { withCredentials: true })
+          .put(`/bank-accounts/${initialData.id}`, payload, {
+            withCredentials: true,
+          })
           .then((response) => {
             showNotification(
               "Conta bancária atualizada com sucesso",
@@ -136,38 +138,39 @@ export default function BankAccountDialog({
   };
 
   const deleteBankAccount = async () => {
-  try {
-    await api.delete(`/bank-accounts/${initialData.id}`, { withCredentials: true });
-    showNotification("Conta excluída com sucesso!");
-    onSave();
-  } catch (error) {
-    const errorMessage =
-      error.response?.data?.message || "Erro ao excluir a conta bancária";
-    showNotification(errorMessage, "error");
-  }
-};
-
+    try {
+      await api.delete(`/bank-accounts/${initialData.id}`, {
+        withCredentials: true,
+      });
+      showNotification("Conta excluída com sucesso!");
+      onSave();
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Erro ao excluir a conta bancária";
+      showNotification(errorMessage, "error");
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <Box
+        sx={{
+          padding: 1,
+          alignItems: "center",
+          backgroundColor: "primary.main",
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
+            Gerenciar Conta
+          </Typography>
+          <IconButton onClick={onClose} size="small">
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </Box>
       <DialogContent>
         <form onSubmit={submitBankAccount} noValidate>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 2,
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Gerenciar Conta
-            </Typography>
-            <IconButton onClick={onClose} size="small">
-              <CloseIcon />
-            </IconButton>
-          </Box>
-
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
               fullWidth

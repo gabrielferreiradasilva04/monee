@@ -11,6 +11,8 @@ import Transactions from "../pages/Transactions";
 import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
 import BankAccounts from "../pages/BankAccounts";
+import Category from "../pages/Category";
+import FinancialEducation from "../pages/FinancialEducation";
 
 export default function AppRoutes() {
   return (
@@ -20,9 +22,9 @@ export default function AppRoutes() {
           <Route
             path="/"
             element={
-              // <ProtectedRoute>
+              <ProtectedRoute>
                 <MainLayout />
-              // </ProtectedRoute>
+             </ProtectedRoute>
             }
           >
             {/*Rotas padrões protegidas*/}
@@ -31,7 +33,10 @@ export default function AppRoutes() {
             <Route path="financial-goal" element={<FinancialGoal />}></Route>
             <Route path="open-finance" element={<OpenFinance />}></Route>
             <Route path="transactions" element={<Transactions />}></Route>
+            <Route path="categories" element={<Category />}></Route>
+            <Route path="financial-education" element={<FinancialEducation />}></Route>
             <Route path="not-found" element={<NotFound />}></Route>
+            
           </Route>
           <Route path="/" element={<AuthLayout />}>
             {/*rotas de autenticação*/}

@@ -189,7 +189,7 @@ export default function Appbar() {
             >
 
               <Tooltip title="Praticar">
-                <IconButton size="big">
+                <IconButton size="big" onClick={() => handleNavigate("/financial-education")}>
                   <SportsEsportsIcon sx={{ color: "white" }} />
                 </IconButton>
               </Tooltip>

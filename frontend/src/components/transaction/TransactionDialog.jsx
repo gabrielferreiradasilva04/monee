@@ -28,27 +28,49 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import RepeatIcon from "@mui/icons-material/Repeat";
+import { useNotification } from "../context/NotificationProvider.jsx";
+import { api } from "../../services/axiosConfig.js";
+import { useAuth } from "../../components/context/AuthContext.jsx";
 import React, { useState } from "react";
 
 export default function TransactionDialog({ open, onClose }) {
   const [transactionType, setTransactionType] = useState("DESPESA");
   const [transactionCategory, setTransactionCategory] = useState("");
   const [bankAccount, setBankAccount] = useState("");
+  const [transactionCategories, setTransactionCategories] = useState([]);
+  const [bankAccounts, setBankAccounts] = useState([])
+  const { showNotification } = useNotification();
   const [fixed, setFixed] = useState(false);
+  const { user } = useAuth();
+  
 
-  const transactionCategories = [
-    "Alimentação",
-    "Transporte",
-    "Moradia",
-    "Saúde",
-    "Lazer",
-  ];
-  const bankAccounts = [
-    "Conta Corrente",
-    "Poupança",
-    "Investimentos",
-    "Carteira",
-  ];
+  const fetchTransactionCategories = () => {
+    api
+      .get(`/transaction-categories/${user.id}`, {withCredentials: true })
+      .then((response) => {
+        setTransactionCategories(response.data.content);
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar categorias:", error);
+        showNotification("Erro ao carregar categorias", "error");
+      });
+  }
+  const fetchBankAccounts = () => {
+    api
+      .get(`/bank-accounts/${user.id}`, {withCredentials: true })
+      .then((response) => {
+        setBankAccounts(response.data);
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar contas bancárias:", error);
+        showNotification("Erro ao carregar contas bancárias", "error");
+      });
+  }
+
+    React.useEffect(() => {
+      fetchTransactionCategories();
+      fetchBankAccounts();
+    }, []);
 
   return (
     <Dialog 
@@ -191,8 +213,8 @@ export default function TransactionDialog({ open, onClose }) {
                     }}
                   >
                     {transactionCategories.map((cat) => (
-                      <MenuItem key={cat} value={cat}>
-                        {cat}
+                      <MenuItem key={cat.id} value={cat}>
+                        {cat.title}
                       </MenuItem>
                     ))}
                   </Select>
@@ -235,8 +257,8 @@ export default function TransactionDialog({ open, onClose }) {
                     }}
                   >
                     {bankAccounts.map((account) => (
-                      <MenuItem key={account} value={account}>
-                        {account}
+                      <MenuItem key={account.id} value={account}>
+                        {account.accountName}
                       </MenuItem>
                     ))}
                   </Select>

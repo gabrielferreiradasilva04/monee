@@ -212,6 +212,9 @@ export default function TransactionDialog({ open, onClose }) {
                       borderRadius: 1,
                     }}
                   >
+                    <MenuItem value="" disabled>
+                      Selecione uma categoria
+                    </MenuItem>
                     {transactionCategories.map((cat) => (
                       <MenuItem key={cat.id} value={cat}>
                         {cat.title}
@@ -256,6 +259,9 @@ export default function TransactionDialog({ open, onClose }) {
                       borderRadius: 1,
                     }}
                   >
+                    <MenuItem value="" disabled>
+                      Selecione uma conta
+                    </MenuItem>
                     {bankAccounts.map((account) => (
                       <MenuItem key={account.id} value={account}>
                         {account.accountName}

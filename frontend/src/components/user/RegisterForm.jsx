@@ -1,3 +1,4 @@
+// RegisterForm.jsx (atualizado)
 import React from "react";
 import {
   Box,
@@ -11,12 +12,16 @@ import {
   TextField,
   Link,
   Typography,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { useNotification } from "../context/NotificationProvider.jsx";
-import { api } from "../../services/axiosConfig.js"
-import axios from "axios";
+import { api } from "../../services/axiosConfig.js";
+import { PatternFormat } from "react-number-format";
 import { useNavigate } from "react-router-dom";
+import TermosCondicoesDialog from "../TermosCondicoesDialog.jsx"; // Importe o componente
 
 export default function RegisterForm() {
   //Variáveis para a notificação
@@ -26,21 +31,12 @@ export default function RegisterForm() {
   const [passwordError, setPasswordError] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordRep, setShowPasswordRep] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false); // Estado para controlar o Dialog
 
   //navegação
   const navigate = useNavigate();
-
-  //variáveis para o cadastro do usuário
-  //Json padrão:
-  /**
-   * {
-    "name": "Gabriel Ferreira da Silva",
-    "email": "gabrielferreirasilva@gmail.com",
-    "password": "123456",
-    "phone": "(41) 996241805",
-    "userRole": "ADMINISTRATOR"
-    }
-   */
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -70,36 +66,50 @@ export default function RegisterForm() {
       showNotification("As senhas não conferem", "warning");
       return false;
     }
-    return true
+    return true;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
 
-    if(!validateForm() || !passwordValidation(password, passwordRep)){
+    if (!validateForm() || !passwordValidation(password, passwordRep)) {
       setLoading(false);
-      return; 
+      return;
     }
 
     api
-    .post("/auth/register", {name, email, password, phone, userRole}, {withCredentials: true})
-    .then(( response ) => {
-    
-      showNotification("Cadastro realizado com sucesso! Você será redirecionado", "success");
+      .post(
+        "/auth/register",
+        { name, email, password, phone, userRole },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        showNotification(
+          "Cadastro realizado com sucesso! Você será redirecionado",
+          "success"
+        );
 
-      setTimeout( () => {
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
+      })
+      .catch((err) => {
+        showNotification(
+          err.response?.data?.message ||
+            "Erro interno do servidor, verifique sua conexão",
+          "error"
+        );
+      })
+      .finally(() => setLoading(false));
+  };
 
-        navigate("/login");
-      
-      }, 3000 );
-    })
-    .catch(( err ) => {
-      showNotification(
-        err.response?.data?.message || "Erro interno do servidor, verifique sua conexão", "error"
-      );
-    })
-    .finally( () => setLoading(false));
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
   };
 
   return (
@@ -154,37 +164,65 @@ export default function RegisterForm() {
               onChange={(e) => setEmail(e.target.value)}
             ></TextField>
 
-            <TextField
-              id="reg-phone"
+            <PatternFormat
+              format="(##) #####-####"
+              mask="_"
+              value={phone}
+              onValueChange={(values) => setPhone(values.value)}
+              customInput={TextField}
+              label="Telefone"
               fullWidth
               size="small"
-              label="Telefone"
-              type="text"
               error={!!formErrors.phone}
               helperText={formErrors.phone}
-              onChange={(e) => setPhone(e.target.value)}
-            ></TextField>
+            />
 
             <TextField
               id="reg-password"
               fullWidth
               size="small"
               label="Senha"
-              type="password"
+              type={showPassword ? "text" : "password"}
               onChange={(e) => setPassword(e.target.value)}
               error={!!formErrors.password}
               helperText={formErrors.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             ></TextField>
+            
             <TextField
               id="reg-passwordrep"
               fullWidth
               size="small"
               label="Confirmar senha"
-              type="password"
+              type={showPasswordRep ? "text" : "password"}
               onChange={(e) => setPasswordRep(e.target.value)}
               error={!!formErrors.passwordRep}
               helperText={formErrors.passwordRep}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPasswordRep(!showPasswordRep)}
+                      edge="end"
+                    >
+                      {showPasswordRep ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             ></TextField>
+            
             <Box>
               <FormGroup
                 sx={{
@@ -202,7 +240,14 @@ export default function RegisterForm() {
                   }
                   label="Eu concordo com os"
                 />
-                <Link>termos e condições</Link>
+                <Link 
+                  component="button" 
+                  type="button"
+                  onClick={handleOpenDialog}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  termos e condições
+                </Link>
               </FormGroup>
               {formErrors.terms && (
                 <Typography variant="body2" color="error" sx={{ ml: 1 }}>
@@ -220,19 +265,21 @@ export default function RegisterForm() {
             <Divider />
             <Box sx={{ display: "block", justifyContent: "center" }}>
               <Button
-                            color="primary"
-                            sx={{ borderRadius: "10px" }}
-                            size="large"
-                            variant="contained"
-                            fullWidth
-                            type="submit"
-                            disabled={loading}
-                            startIcon={
-                              loading ? <CircularProgress size={20} color="inherit" /> : null
-                            }
-                          >
-                            {loading ? "Cadastrando" : "Confirmar cadastro"}
-                          </Button>
+                color="primary"
+                sx={{ borderRadius: "10px" }}
+                size="large"
+                variant="contained"
+                fullWidth
+                type="submit"
+                disabled={loading}
+                startIcon={
+                  loading ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : null
+                }
+              >
+                {loading ? "Cadastrando" : "Confirmar cadastro"}
+              </Button>
               <Box
                 sx={{ display: "flex", justifyContent: "center", margin: "0" }}
               >
@@ -249,6 +296,12 @@ export default function RegisterForm() {
           </Box>
         </Box>
       </Card>
+
+      {/* Dialog dos Termos e Condições */}
+      <TermosCondicoesDialog 
+        open={dialogOpen} 
+        onClose={handleCloseDialog} 
+      />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { AccountCircle, Lock, Login } from "@mui/icons-material";
+import { AccountCircle, Lock, Login, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -13,6 +13,7 @@ import {
   CircularProgress,
   TextField,
   Typography,
+  IconButton,
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +22,7 @@ import React from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function LoginForm() {
-  //vairáiveis de controle de autenticacao
+  //variáveis de controle de autenticacao
   const { login, user } = useAuth();
 
   //variáveis para as notificações
@@ -32,6 +33,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   //controles de formulário
@@ -67,6 +69,10 @@ export default function LoginForm() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -119,12 +125,22 @@ export default function LoginForm() {
               helperText={formErrors.email}
             ></TextField>
             <TextField
-              type="password"
+              type={showPassword ? "text" : "password"}
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
                       <Lock />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
                     </InputAdornment>
                   ),
                 },

@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Button, Container, Typography, IconButton } from "@mui/material";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "../components/user/LoginForm";
 

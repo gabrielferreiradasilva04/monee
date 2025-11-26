@@ -7,8 +7,9 @@ import {
   Stack,
   Paper,
   Chip,
+  CircularProgress,
 } from "@mui/material";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import PageContainer from "../components/PageConteiner";
 
@@ -16,47 +17,28 @@ export default function Overview() {
   const lineChartRef = useRef(null);
   const doughnutChartRef = useRef(null);
   const barChartRef = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   // Dados mockados
   const kpiData = {
-    totalBalance: 12500,
-    monthlyIncome: 5800,
-    monthlyExpenses: 4300,
+    totalBalance: 358.20,
+    monthlyIncome: 2850,
+    monthlyExpenses: 2480.80,
     savingsRate: 25.8,
   };
 
-  const recentTransactions = [
-    {
-      id: 1,
-      description: "Salário",
-      amount: 5800,
-      type: "income",
-      date: "15/11/2023",
-    },
-    {
-      id: 2,
-      description: "Aluguel",
-      amount: -1200,
-      type: "expense",
-      date: "10/11/2023",
-    },
-    {
-      id: 3,
-      description: "Mercado",
-      amount: -450,
-      type: "expense",
-      date: "08/11/2023",
-    },
-    {
-      id: 4,
-      description: "Freelance",
-      amount: 1200,
-      type: "income",
-      date: "05/11/2023",
-    },
-  ];
+  useEffect(() => {
+    // Simular loading de 3 segundos
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
+    if (loading) return;
+
     // Gráfico de Linha - Receitas vs Despesas
     if (lineChartRef.current) {
       new Chart(lineChartRef.current, {
@@ -152,14 +134,36 @@ export default function Overview() {
         },
       });
     }
-  }, []);
+  }, [loading]);
+
+  if (loading) {
+    return (
+      <PageContainer>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "50vh",
+          }}
+        >
+          <Stack spacing={2} alignItems="center">
+            <CircularProgress size={60} />
+            <Typography variant="h6" color="textSecondary">
+              Carregando dados...
+            </Typography>
+          </Stack>
+        </Box>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
       <Box sx={{ width: "100%", maxWidth: "1200px", padding: 2 }}>
         {/* KPIs Cards - Linha Superior */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid container spacing={2} sx={{ mb: 3 }} justifyContent="center">
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card sx={{ height: "100%" }}>
               <CardContent>
                 <Typography
@@ -176,7 +180,7 @@ export default function Overview() {
             </Card>
           </Grid>
 
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card sx={{ height: "100%" }}>
               <CardContent>
                 <Typography
@@ -193,7 +197,7 @@ export default function Overview() {
             </Card>
           </Grid>
 
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Card sx={{ height: "100%" }}>
               <CardContent>
                 <Typography
@@ -205,23 +209,6 @@ export default function Overview() {
                 </Typography>
                 <Typography variant="h5" fontWeight="bold" color="error.main">
                   R$ {kpiData.monthlyExpenses.toLocaleString("pt-BR")}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ height: "100%" }}>
-              <CardContent>
-                <Typography
-                  color="textSecondary"
-                  gutterBottom
-                  variant="overline"
-                >
-                  Economia
-                </Typography>
-                <Typography variant="h5" fontWeight="bold" color="info.main">
-                  {kpiData.savingsRate}%
                 </Typography>
               </CardContent>
             </Card>
@@ -257,133 +244,17 @@ export default function Overview() {
           </Grid>
         </Grid>
 
-        {/* Segunda Linha */}
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom fontWeight="bold">
-                  Saldo Mensal
-                </Typography>
-                <Box sx={{ height: 200 }}>
-                  <canvas ref={barChartRef} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Card sx={{ height: "100%" }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom fontWeight="bold">
-                  Transações Recentes
-                </Typography>
-                <Stack spacing={1.5}>
-                  {recentTransactions.map((transaction) => (
-                    <Paper
-                      key={transaction.id}
-                      variant="outlined"
-                      sx={{ p: 1.5 }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Box>
-                          <Typography variant="body2" fontWeight="medium">
-                            {transaction.description}
-                          </Typography>
-                          <Typography variant="caption" color="textSecondary">
-                            {transaction.date}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ textAlign: "right" }}>
-                          <Typography
-                            variant="body1"
-                            color={
-                              transaction.type === "income"
-                                ? "success.main"
-                                : "error.main"
-                            }
-                            fontWeight="bold"
-                          >
-                            {transaction.amount > 0 ? "+" : ""}
-                            {transaction.amount.toLocaleString("pt-BR", {
-                              style: "currency",
-                              currency: "BRL",
-                            })}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Paper>
-                  ))}
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Resumo Simples */}
+        {/* Gráfico de Barras ocupando toda a parte de baixo */}
         <Grid container spacing={2}>
           <Grid size={{ xs: 12 }}>
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom fontWeight="bold">
-                  Resumo do Mês
+                  Saldo Mensal
                 </Typography>
-                <Grid container spacing={3}>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <Typography variant="body2" color="textSecondary">
-                      Receita Total
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      color="success.main"
-                    >
-                      R$ 5.800
-                    </Typography>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <Typography variant="body2" color="textSecondary">
-                      Despesa Total
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      color="error.main"
-                    >
-                      R$ 4.300
-                    </Typography>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <Typography variant="body2" color="textSecondary">
-                      Saldo
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      color="primary.main"
-                    >
-                      R$ 1.500
-                    </Typography>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <Typography variant="body2" color="textSecondary">
-                      Economia
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      color="info.main"
-                    >
-                      25.8%
-                    </Typography>
-                  </Grid>
-                </Grid>
+                <Box sx={{ height: 300 }}>
+                  <canvas ref={barChartRef} />
+                </Box>
               </CardContent>
             </Card>
           </Grid>
